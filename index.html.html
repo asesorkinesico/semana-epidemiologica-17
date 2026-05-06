@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Semana Epidemiológica - Talca</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+  :root {
+    --azul-oscuro: #0a2342;
+    --azul-medio: #1565c0;
+    --azul-claro: #1e88e5;
+    --celeste: #42a5f5;
+    --verde: #00897b;
+    --verde-claro: #26a69a;
+    --rojo: #e53935;
+    --naranja: #fb8c00;
+    --gris-claro: #f4f6f9;
+    --gris-borde: #dde3ea;
+    --blanco: #ffffff;
+    --texto-oscuro: #0a2342;
+    --texto-medio: #455a7a;
+    --sombra: 0 4px 20px rgba(10,35,66,0.10);
+    --sombra-hover: 0 8px 32px rgba(10,35,66,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--gris-claro);
+    color: var(--texto-oscuro);
+    min-height: 100vh;
+  }
+
+  /* ===== PÁGINAS ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== HEADER GLOBAL ===== */
+  .top-bar {
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-medio) 100%);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .top-bar-logo {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* ===== PÁGINA DE INICIO ===== */
+  #page-home {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-section {
+    background: linear-gradient(160deg, var(--azul-oscuro) 0%, #1a3a6e 50%, var(--azul-medio) 100%);
+    padding: 22px 2rem 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .hero-title span {
+    display: block;
+    font-size: 0.55em;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.75);
+    margin-top: 6px;
+  }
+  .hero-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 8px;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  .semana-chips {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .chip {
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .chip.s13 { background: rgba(66,165,245,0.3); border-color: rgba(66,165,245,0.5); }
+  .chip.s14 { background: rgba(0,137,123,0.3); border-color: rgba(0,137,123,0.5); }
+  .chip.s15 { background: rgba(123,31,162,0.3); border-color: rgba(123,31,162,0.5); }
+  .chip.s16 { background: rgba(230,81,0,0.3); border-color: rgba(230,81,0,0.5); }
+  .chip.s17 { background: rgba(46,125,50,0.3); border-color: rgba(46,125,50,0.5); }
+
+  /* ===== CARDS GRID ===== */
+  .cards-section {
+    padding: 16px 2rem 10px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .section-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--azul-medio);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gris-borde);
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+  }
+
+  .nav-card {
+    background: var(--blanco);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+    border: 1px solid var(--gris-borde);
+    position: relative;
+  }
+  .nav-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--sombra-hover);
+    border-color: var(--celeste);
+  }
+  .nav-card:active { transform: scale(0.98); }
+
+  .card-img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+  }
+  .card-img-placeholder {
+    width: 100%;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+  .card-body {
+    padding: 10px 12px 28px;
+  }
+  .card-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--azul-claro);
+    margin-bottom: 5px;
+  }
+  .card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--texto-oscuro);
+    line-height: 1.3;
+  }
+  .card-arrow {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 28px; height: 28px;
+    background: var(--azul-claro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .nav-card:hover .card-arrow { background: var(--azul-oscuro); }
+
+  /* Colores por categoría */
+  .card-urgencia .card-img-placeholder { background: linear-gradient(135deg, #e3f0fd, #bbdefb); }
+  .card-vacuna .card-img-placeholder { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+  .card-kinesica .card-img-placeholder { background: linear-gradient(135deg, #e0f7fa, #b2ebf2); }
+  .card-viral-nac .card-img-placeholder { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+  .card-viral-tal .card-img-placeholder { background: linear-gradient(135deg, #fce4ec, #f8bbd0); }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--azul-oscuro);
+    color: rgba(255,255,255,0.7);
+    padding: 12px 2rem;
+    margin-top: auto;
+    font-size: 0.78rem;
+    line-height: 1.7;
+  }
+  .footer-inner { max-width: 900px; margin: 0 auto; }
+  .footer-support {
+    color: var(--celeste);
+    font-weight: 600;
+    font-size: 0.82rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-source {
+    font-size: 0.73rem;
+    color: rgba(255,255,255,0.5);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .footer-source strong { color: rgba(255,255,255,0.7); }
+
+  /* ===== PÁGINAS INTERNAS ===== */
+  .inner-header {
+    background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-medio));
+    padding: 32px 2rem 28px;
+    color: white;
+  }
+  .inner-header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.3rem, 3vw, 1.9rem);
+    margin-bottom: 6px;
+  }
+  .inner-header p {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.88rem;
+  }
+
+  .inner-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 2rem 48px;
+  }
+
+  /* ===== TABLAS ===== */
+  .section-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    border: 1px solid var(--gris-borde);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .section-card-header {
+    background: linear-gradient(90deg, var(--azul-oscuro), #1e4b8c);
+    color: white;
+    padding: 14px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-card-header.green { background: linear-gradient(90deg, #00695c, #00897b); }
+  .section-card-header.orange { background: linear-gradient(90deg, #e65100, #fb8c00); }
+  .section-card-header.teal { background: linear-gradient(90deg, #006064, #00838f); }
+  .section-card-header.pink { background: linear-gradient(90deg, #880e4f, #c2185b); }
+
+  .table-wrap { overflow-x: auto; padding: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  thead tr th {
+    background: #f0f4f8;
+    color: var(--texto-medio);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 2px solid var(--gris-borde);
+    white-space: nowrap;
+  }
+  thead tr th:first-child { text-align: left; }
+  tbody tr td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gris-borde);
+    text-align: center;
+    color: var(--texto-oscuro);
+  }
+  tbody tr td:first-child { text-align: left; font-weight: 500; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #f7faff; }
+  .row-total td { background: #e3f0fd; font-weight: 700; }
+  .row-center td:first-child { font-weight: 700; color: var(--azul-medio); }
+  .row-sub td:first-child { padding-left: 24px; color: var(--texto-medio); font-size: 0.78rem; }
+  .val-up { color: var(--rojo); font-weight: 700; }
+  .val-down { color: var(--verde); font-weight: 700; }
+
+  /* ===== GRÁFICOS ===== */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  @media(max-width: 700px) { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    border: 1px solid var(--gris-borde);
+    overflow: hidden;
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-header {
+    padding: 14px 20px 12px;
+    border-bottom: 1px solid var(--gris-borde);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .chart-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--texto-oscuro);
+  }
+  .chart-legend {
+    display: flex;
+    gap: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: var(--texto-medio);
+    font-weight: 600;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .chart-body { padding: 16px; }
+  .chart-body canvas { max-height: 260px; }
+
+  /* STAT CHIPS */
+  .stats-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .stat-chip {
+    background: white;
+    border: 1px solid var(--gris-borde);
+    border-radius: 10px;
+    padding: 12px 18px;
+    box-shadow: var(--sombra);
+    min-width: 140px;
+  }
+  .stat-chip .label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--texto-medio); margin-bottom: 4px; }
+  .stat-chip .value { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.7rem; color: var(--azul-oscuro); line-height: 1; }
+  .stat-chip .delta { font-size: 0.72rem; font-weight: 700; margin-top: 3px; }
+  .delta.down { color: var(--verde); }
+  .delta.up { color: var(--rojo); }
+
+  .semana-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+  .s13-badge { background: #e3f0fd; color: var(--azul-medio); }
+  .s14-badge { background: #e0f5f3; color: var(--verde); }
+  .s16-badge { background: #fff3e0; color: #e65100; }
+  .s17-badge { background: #e8f5e9; color: #2e7d32; }
+
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; justify-content: space-around; padding: 12px; flex-wrap: wrap; gap: 12px; }
+  .donut-wrap canvas { max-width: 180px; max-height: 180px; }
+  .donut-legend { display: flex; flex-direction: column; gap: 6px; }
+  .donut-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
+  .donut-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Progress bars */
+  .prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .prog-label { font-size: 0.75rem; width: 120px; flex-shrink: 0; color: var(--texto-medio); font-weight: 600; }
+  .prog-bar { flex: 1; height: 8px; background: #e8eef5; border-radius: 4px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+  .prog-val { font-size: 0.75rem; font-weight: 700; color: var(--texto-oscuro); width: 40px; text-align: right; }
+
+  /* Vacunacion */
+  .vac-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 28px;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .vac-gauge { text-align: center; }
+  .gauge-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--azul-claro) 0% 62.66%, #e8eef5 62.66% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+  .gauge-inner {
+    width: 100px; height: 100px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .gauge-pct { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.6rem; color: var(--azul-oscuro); }
+  .gauge-sub { font-size: 0.62rem; color: var(--texto-medio); font-weight: 600; text-transform: uppercase; }
+
+  @media(max-width:600px) {
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 1.4rem; }
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== HOME ===================== -->
+<div id="page-home" class="page active">
+  <div class="top-bar">
+    <span class="top-bar-logo">APS Talca · Epidemiología</span>
+    <span class="semana-badge s17-badge">Sem 17</span>
+  </div>
+
+  <div class="hero-section">
+    <div class="hero-badge">📊 Vigilancia Epidemiológica</div>
+    <h1 class="hero-title">
+      INFORME SEMANA EPIDEMIOLÓGICA TALCA
+      <span>Semana 17 · 2026</span>
+    </h1>
+    <div class="hero-subtitle">Subdepartamento de Gestión Clínica APS Talca</div>
+    <div class="semana-chips">
+      <div class="chip s17">Semana 17</div>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <div class="section-label">Módulos del Informe</div>
+    <div class="cards-grid">
+
+      <!-- CARD 1: URGENCIAS -->
+      <div class="nav-card card-urgencia" onclick="showPage('page-urgencia', 'urgencia-submodulo')">
+        <div class="card-img-placeholder">🏥</div>
+        <div class="card-body">
+          <div class="card-tag">Módulo 1</div>
+          <div class="card-title">Atenciones en Urgencia</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <!-- CARD 2: VACUNACION -->
+      <div class="nav-card card-vacuna" onclick="showPage('page-vacuna', 'vacuna-submodulo')">
+        <div class="card-img-placeholder">💉</div>
+        <div class="card-body">
+          <div class="card-tag">Módulo 2</div>
+          <div class="card-title">Vacunación</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <!-- CARD 3: KINESICA -->
+      <div class="nav-card card-kinesica" onclick="showPage('page-kinesica', 'kinesica-submodulo')">
+        <img class="card-img"
+          src="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&q=80&fit=crop"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          alt="Fonendoscopio estetoscopio"
+          style="object-position: center center;">
+        <div class="card-img-placeholder" style="display:none;">🩺</div>
+        <div class="card-body">
+          <div class="card-tag">Módulo 3</div>
+          <div class="card-title">Consultas Kinesicas Agudas Salas IRA-ERA</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <!-- CARD 4: CIRCULACION VIRAL NACIONAL -->
+      <div class="nav-card card-viral-nac" onclick="showPage('page-viral-nac', 'viral-nac-submodulo')">
+        <div class="card-img-placeholder">🇨🇱</div>
+        <div class="card-body">
+          <div class="card-tag">Módulo 4</div>
+          <div class="card-title">Circulación Viral Nacional</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <!-- CARD 5: CIRCULACION VIRAL TALCA -->
+      <div class="nav-card card-viral-tal" onclick="showPage('page-viral-tal', 'viral-tal-submodulo')">
+        <div class="card-img-placeholder">🧬</div>
+        <div class="card-body">
+          <div class="card-tag">Módulo 5</div>
+          <div class="card-title">Circulación Viral Talca</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-inner">
+      <div class="footer-support">
+        📧 Soporte: Fabián Chamorro · Asesor Kinésico · asesoriakinesica.dcs@apstalca.cl
+      </div>
+      <div class="footer-source">
+        <strong>Fuente:</strong> 1. Instituto de Salud Pública — Ministerio de Salud &nbsp;·&nbsp; 2. Sismaule — Servicio de Salud del Maule<br>
+        <strong>Datos proporcionados por:</strong> <strong>Francisco Meza</strong> · Asesor Epidemiológico &nbsp;·&nbsp;
+        <strong>Rosa Villaseca</strong> · Asesora Urgencia &nbsp;·&nbsp;
+        <strong>Fabián Chamorro</strong> · Asesor Kinésico
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: URGENCIAS ===================== -->
+<div id="page-urgencia" class="page">
+  <div class="top-bar">
+    <span class="top-bar-logo">🏥 Atenciones en Urgencia</span>
+    <button class="back-btn" onclick="showPage('page-home')">← Inicio</button>
+  </div>
+  <div class="inner-header">
+    <h1>Atenciones en Urgencia</h1>
+    <p>Comparativo Semanas 13 · 14 · 15 · 16 · CESFAM y SAR Talca</p>
+  </div>
+  <div class="inner-content" id="urgencia-submodulo">
+
+    <!-- STATS RESUMEN -->
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="label">Total Talca S17</div>
+        <div class="value">5.020</div>
+        <div class="delta down">▼ 17 vs S16 (−0,3%)</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Resp. S17</div>
+        <div class="value">1.553</div>
+        <div class="delta up">▲ +137 vs S16 (+9,7%)</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">% Resp. / Total</div>
+        <div class="value">30,9%</div>
+        <div class="delta">Causas resp. del total atenciones S17</div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO RESPIRATORIO TOTAL TALCA (PRIMER GRÁFICO) -->
+    <div class="chart-card" style="margin-bottom:28px;">
+      <div class="chart-header">
+        <h3>🫁 Total Causas Sistema Respiratorio (J00-J98) — Total Talca · S13 a S17</h3>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>S13</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#00897b"></div>S14</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#7b1fa2"></div>S15</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>S17</div>
+        </div>
+      </div>
+      <div class="chart-body"><canvas id="chartRespTotalTalca"></canvas></div>
+      <div style="background:#f0f8f6;border-top:1px solid var(--gris-borde);padding:12px 20px;font-size:0.82rem;color:var(--texto-medio);">
+        📌 Las causas del Sistema Respiratorio (J00-J98) representan el <strong style="color:var(--rojo)">30,9%</strong> del total de Atenciones de Urgencia de Talca en la Semana 17 (1.553 de 5.020 atenciones). Se observa un <strong>repunte respiratorio</strong> respecto a la Semana 16.
+      </div>
+    </div>
+
+    <!-- GRÁFICOS COMPARATIVOS CENTROS -->
+    <div class="charts-grid">
+      <div class="chart-card full">
+        <div class="chart-header">
+          <h3>📊 Total Atenciones por Centro — S13 · S14 · S15 · S16 · S17</h3>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>S13</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#00897b"></div>S14</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#7b1fa2"></div>S15</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#2e7d32"></div>S17</div>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="chartCentrosTotal"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-header">
+          <h3>🫁 Causas Respiratorias por Centro — S13 · S14 · S15 · S16 · S17</h3>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>S13</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#26a69a"></div>S14</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ab47bc"></div>S15</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>S17</div>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="chartCentrosResp"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABLAS POR CENTRO — SEMANA 16 -->
+    <!-- TOTAL TALCA — PRIMERO -->
+    <div class="section-card">
+      <div class="section-card-header" style="background: linear-gradient(90deg, #004d40, #00695c);">🏙️ TOTAL TALCA — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>5020</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>1553</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>1200</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr class="row-sub"><td>Influenza (J09-J11)</td><td>2</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>55</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>213</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>43</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAPU ASTABURUAGA -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SAPU ASTABURUAGA — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>448</td><td>4</td><td>33</td><td>70</td><td>273</td><td>68</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>179</td><td>3</td><td>17</td><td>46</td><td>95</td><td>18</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>159</td><td>3</td><td>16</td><td>45</td><td>81</td><td>14</td></tr>
+            <tr class="row-sub"><td>Influenza (J09-J11)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>1</td><td>-</td><td>-</td><td>-</td><td>-</td><td>1</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>15</td><td>-</td><td>1</td><td>1</td><td>12</td><td>1</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>3</td><td>-</td><td>-</td><td>-</td><td>2</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAPU JULIO CONTARDO -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SAPU JULIO CONTARDO — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>436</td><td>2</td><td>41</td><td>85</td><td>228</td><td>80</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>188</td><td>2</td><td>28</td><td>45</td><td>92</td><td>21</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>169</td><td>2</td><td>26</td><td>41</td><td>85</td><td>15</td></tr>
+            <tr class="row-sub"><td>Influenza (J09-J11)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>10</td><td>-</td><td>2</td><td>3</td><td>3</td><td>2</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>4</td><td>-</td><td>-</td><td>1</td><td>1</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAR CARLOS TRUPP -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SAR CARLOS TRUPP — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>1174</td><td>23</td><td>90</td><td>152</td><td>719</td><td>190</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>326</td><td>7</td><td>43</td><td>81</td><td>155</td><td>40</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>275</td><td>6</td><td>39</td><td>69</td><td>137</td><td>24</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>3</td><td>-</td><td>1</td><td>-</td><td>-</td><td>2</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>31</td><td>1</td><td>3</td><td>12</td><td>11</td><td>4</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>11</td><td>-</td><td>-</td><td>-</td><td>5</td><td>6</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAR LA FLORIDA -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SAR LA FLORIDA — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>1514</td><td>19</td><td>107</td><td>210</td><td>904</td><td>274</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>421</td><td>8</td><td>54</td><td>97</td><td>208</td><td>54</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>258</td><td>3</td><td>35</td><td>75</td><td>133</td><td>12</td></tr>
+            <tr class="row-sub"><td>Influenza (J09-J11)</td><td>1</td><td>-</td><td>-</td><td>-</td><td>1</td><td>-</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>49</td><td>-</td><td>4</td><td>4</td><td>17</td><td>24</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>90</td><td>5</td><td>13</td><td>17</td><td>45</td><td>10</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>14</td><td>-</td><td>-</td><td>1</td><td>8</td><td>5</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAR LAS AMERICAS -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SAR LAS AMÉRICAS — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>1360</td><td>29</td><td>141</td><td>215</td><td>812</td><td>163</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>404</td><td>13</td><td>62</td><td>88</td><td>212</td><td>29</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>317</td><td>9</td><td>49</td><td>68</td><td>173</td><td>18</td></tr>
+            <tr class="row-sub"><td>Influenza (J09-J11)</td><td>1</td><td>-</td><td>-</td><td>1</td><td>-</td><td>-</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>7</td><td>-</td><td>1</td><td>1</td><td>4</td><td>1</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>56</td><td>4</td><td>11</td><td>12</td><td>25</td><td>4</td></tr>
+            <tr class="row-sub"><td>Crisis Obstructiva (J40-J46)</td><td>11</td><td>-</td><td>-</td><td>3</td><td>6</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SUR MERCEDES -->
+    <div class="section-card">
+      <div class="section-card-header">🏥 SUR MERCEDES — Semana 17</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Diagnóstico</th>
+            <th>Total</th><th>&lt;1</th><th>1-4</th><th>5-14</th><th>15-64</th><th>65+</th>
+          </tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Total Atenciones Urgencia</td><td>88</td><td>-</td><td>7</td><td>21</td><td>54</td><td>6</td></tr>
+            <tr><td>Total Respiratorio (J00-J98)</td><td>35</td><td>-</td><td>5</td><td>7</td><td>21</td><td>2</td></tr>
+            <tr class="row-sub"><td>IRA Alta (J00-J06)</td><td>22</td><td>-</td><td>2</td><td>6</td><td>13</td><td>1</td></tr>
+            <tr class="row-sub"><td>Neumonía (J12-J18)</td><td>2</td><td>-</td><td>-</td><td>-</td><td>1</td><td>1</td></tr>
+            <tr class="row-sub"><td>Bronquitis/Bronquiolitis (J20-J21)</td><td>11</td><td>-</td><td>3</td><td>1</td><td>7</td><td>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /inner-content -->
+</div><!-- /page-urgencia -->
+
+
+<!-- ===================== PAGE: VACUNACION ===================== -->
+<div id="page-vacuna" class="page">
+  <div class="top-bar">
+    <span class="top-bar-logo">💉 Vacunación</span>
+    <button class="back-btn" onclick="showPage('page-home')">← Inicio</button>
+  </div>
+  <div class="inner-header">
+    <h1>Vacunación</h1>
+    <p>Cobertura vacunal en la población de Talca</p>
+  </div>
+  <div class="inner-content" id="vacuna-submodulo">
+        <div class="value">149.448</div>
+        <div class="delta">Habitantes Talca</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Vacunados</div>
+        <div class="value">114.107</div>
+        <div class="delta" style="color:var(--azul-claro)">76,4% cobertura local</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">% País</div>
+        <div class="value">63,9%</div>
+        <div class="delta up">▲ +12,5 pp vs país</div>
+      </div>
+    </div>
+
+    <!-- PRIMER GRÁFICO: % Vacunación Talca -->
+    <div class="chart-card" style="margin-bottom:28px;">
+      <div class="chart-header"><h3>🥧 Cobertura Vacunal Talca S16 — Distribución Vacunados / No Vacunados</h3></div>
+      <div class="chart-body">
+        <div class="donut-wrap">
+          <canvas id="chartVacunaDonut" style="max-width:180px;max-height:180px;"></canvas>
+          <div class="donut-legend">
+            <div style="font-size:1.5rem;font-weight:800;color:var(--azul-oscuro);font-family:'Montserrat',sans-serif;margin-bottom:8px;">76,4%</div>
+            <div class="donut-item"><div class="donut-color" style="background:#1565c0"></div>Vacunados: 114.107 (76,4%)</div>
+            <div class="donut-item"><div class="donut-color" style="background:#e8eef5"></div>No vacunados: 35.341 (23,6%)</div>
+            <div style="margin-top:10px;font-size:0.75rem;color:var(--texto-medio);">Población total: 149.448 habitantes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEGUNDO GRÁFICO: Comparación Talca vs País -->
+    <div class="chart-card" style="margin-bottom:28px;">
+      <div class="chart-header"><h3>📊 Cobertura Vacunal — Talca (76,4%) vs País (63,86%)</h3></div>
+      <div class="chart-body">
+        <canvas id="chartVacuna"></canvas>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header green">📋 Datos de Vacunación</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Indicador</th><th>Valor</th><th>Porcentaje</th></tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Población Total Talca</td><td>149.448</td><td>100%</td></tr>
+            <tr><td>Vacunados</td><td>114.107</td><td>76,35%</td></tr>
+            <tr><td>No Vacunados</td><td>35.341</td><td>23,65%</td></tr>
+            <tr><td>Porcentaje País (referencia)</td><td>—</td><td>63,86%</td></tr>
+            <tr class="row-total"><td>Diferencia vs País</td><td>—</td><td style="color:var(--verde);font-weight:700">+12,49 pp</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PUNTOS DE VACUNACIÓN -->
+    <div class="section-card">
+      <div class="section-card-header green">📍 Puntos de Vacunación — Talca</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="text-align:left">Nombre del Punto</th>
+            <th style="text-align:left">Dirección</th>
+            <th style="text-align:left">Horario</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>CESFAM Dr. J. Dionisio Astaburuaga — Vacunatorio</td><td>12 Norte S/N</td><td>Lunes a Viernes 8:45 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Dr. J. Dionisio Astaburuaga — Punto</td><td>12 Norte S/N</td><td>Lunes a Viernes 09:00 a 15:40 hrs</td></tr>
+            <tr><td>CESFAM Faustino González — Vacunatorio</td><td>17 Oriente 13 Norte #2360</td><td>Lunes a Viernes 08:30 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Faustino González — Punto Estratégico</td><td>18 Oriente #1895</td><td>Lunes a Viernes 08:30 a 12:00 hrs</td></tr>
+            <tr><td>CESFAM Bicentenario</td><td>Ramadillas de Lircay</td><td>Lunes a Viernes 09:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Bicentenario — Vacunatorio</td><td>Ramadillas de Lircay</td><td>Lunes a Viernes 9:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM La Florida — Vacunatorio</td><td>14 Sur S/N</td><td>Lunes a Viernes 09:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM La Florida — Punto</td><td>14 Sur S/N</td><td>Lunes a Viernes 09:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Las Américas — Punto</td><td>—</td><td>Lunes a Viernes 09:00 a 12:30 / 14:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Las Américas — Vacunatorio</td><td>—</td><td>Lunes a Viernes 8:30 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Villa Magisterio — Punto</td><td>21 Pte con 27 Sur S/N</td><td>Lunes a Viernes 8:30 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Villa Magisterio — Vacunatorio</td><td>21 Pte con 27 Sur S/N</td><td>Lunes a Viernes 8:30 a 12:30 / 14:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Dr. Julio Contardo — Vacunatorio</td><td>15 Sur 10 Oriente S/N</td><td>Lunes a Viernes 8:30 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Dr. Julio Contardo — Punto</td><td>15 Sur 10 Oriente S/N</td><td>Lunes a Viernes 8:30 a 16:00 hrs</td></tr>
+            <tr><td>Interior del CREA (CESFAM Dr. Julio Contardo)</td><td>11 Oriente #1470</td><td>Sábado 09:00 a 12:30 hrs</td></tr>
+            <tr><td>CESFAM Carlos Trupp — Vacunatorio</td><td>Calle 30 Ote. S, Ocho y Medio Sur</td><td>Lunes a Viernes 09:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Carlos Trupp — Punto</td><td>Calle 30 Ote. S, Ocho y Medio Sur</td><td>Lunes a Viernes 09:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Carlos Trupp — Mall Plaza</td><td>Av. Circunvalación Ote. 1055</td><td>Lunes a Viernes 09:00 a 16:00 hrs · Sábado 10:00 a 16:00 hrs</td></tr>
+            <tr><td>CESFAM Carlos Trupp — FONASA</td><td>Calle 6 Ote. 1218</td><td>Lunes a Viernes 09:00 a 14:00 hrs</td></tr>
+            <tr><td>Hospital Regional de Talca</td><td>1 Norte 1990</td><td>Lunes a Jueves 08:30 a 16:30 · Viernes hasta 15:30 hrs</td></tr>
+            <tr><td>CESFAM Magisterio (Mall Go Florida)</td><td>Avenida Colin 635, Talca</td><td>Sábado 10:30 a 16:30 hrs</td></tr>
+            <tr><td>CESFAM Dr. José Dionisio Astaburuaga</td><td>1 Sur entre 9 y 10 Ote.</td><td>Lunes, Miércoles y Viernes 10:00 a 13:00 / 14:00 a 16:00 hrs</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: KINESICA ===================== -->
+<div id="page-kinesica" class="page">
+  <div class="top-bar">
+    <span class="top-bar-logo">🫁 Consultas Kinesicas Agudas Salas IRA-ERA</span>
+    <button class="back-btn" onclick="showPage('page-home')">← Inicio</button>
+  </div>
+  <div class="inner-header">
+    <h1>Consultas Kinesicas Agudas Salas IRA-ERA</h1>
+    <p>Comparativo Semanas 13 · 14 · 15 · 16 por Centro</p>
+  </div>
+  <div class="inner-content" id="kinesica-submodulo">
+
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="label">Total S17</div>
+        <div class="value">282</div>
+        <div class="delta down">▼ -11 vs S16 (−3,8%)</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Total S16</div>
+        <div class="value">293</div>
+        <div class="delta">Semana anterior de referencia</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card full">
+        <div class="chart-header">
+          <h3>📈 Evolución Total Talca — S13 · S14 · S15 · S16 · S17</h3>
+        </div>
+        <div class="chart-body"><canvas id="chartKinesicaTotal"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-header">
+          <h3>📊 Consultas IRA-ERA Agudas por Centro — S13 · S14 · S15 · S16 · S17</h3>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#1565c0"></div>S13</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#00897b"></div>S14</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#7b1fa2"></div>S15</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#e65100"></div>S16</div>
+          </div>
+        </div>
+        <div class="chart-body"><canvas id="chartKinesicaCentros"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header teal">🫁 Consultas Kinesicas Agudas IRA-ERA por Centro</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Centro</th>
+            <th>S13</th>
+            <th>S14</th>
+            <th>S15</th>
+            <th>S16</th>
+            <th>S17</th>
+            <th>Var S16→S17</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Astaburuaga</td><td>16</td><td>16</td><td>13</td><td>22</td><td>27</td><td class="val-up">▲ +5</td></tr>
+            <tr><td>Julio Contardo</td><td>9</td><td>24</td><td>33</td><td>39</td><td>39</td><td style="color:#888">= 0</td></tr>
+            <tr><td>La Florida</td><td>34</td><td>47</td><td>38</td><td>39</td><td>36</td><td class="val-down">▼ -3</td></tr>
+            <tr><td>Carlos Trupp</td><td>24</td><td>36</td><td>56</td><td>50</td><td>43</td><td class="val-down">▼ -7</td></tr>
+            <tr><td>Las Américas</td><td>48</td><td>59</td><td>62</td><td>56</td><td>49</td><td class="val-down">▼ -7</td></tr>
+            <tr><td>Bicentenario</td><td>9</td><td>20</td><td>21</td><td>24</td><td>13</td><td class="val-down">▼ -11</td></tr>
+            <tr><td>Villa Magisterio</td><td>25</td><td>27</td><td>45</td><td>29</td><td>34</td><td class="val-up">▲ +5</td></tr>
+            <tr><td>Faustino González</td><td>23</td><td>16</td><td>32</td><td>26</td><td>22</td><td class="val-down">▼ -4</td></tr>
+            <tr><td>CECOSF Carlos Trupp</td><td>1</td><td>2</td><td>8</td><td>7</td><td>7</td><td style="color:#888">= 0</td></tr>
+            <tr><td>CECOSF Nuevo Horizonte</td><td>0</td><td>4</td><td>3</td><td>1</td><td>4</td><td class="val-up">▲ +3</td></tr>
+            <tr><td>CECOSF Brilla el Sol</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="color:#888">= 0</td></tr>
+            <tr><td>Posta Mercedes</td><td>5</td><td>0</td><td>0</td><td>0</td><td>8</td><td class="val-up">▲ +8</td></tr>
+            <tr class="row-total"><td>TOTAL TALCA</td><td>194</td><td>251</td><td>311</td><td>293</td><td>282</td><td class="val-down">▼ -11 (−3,8%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: VIRAL NACIONAL ===================== -->
+<div id="page-viral-nac" class="page">
+  <div class="top-bar">
+    <span class="top-bar-logo">🌎 Circulación Viral Nacional</span>
+    <button class="back-btn" onclick="showPage('page-home')">← Inicio</button>
+  </div>
+  <div class="inner-header">
+    <h1>Circulación Viral Nacional</h1>
+    <p>Distribución de virus respiratorios a nivel país</p>
+  </div>
+  <div class="inner-content" id="viral-nac-submodulo">
+
+    <!-- MINI TABLA RESUMEN SE13 -->
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="label">Virus 1° — S17</div>
+        <div class="value">Rinov.</div>
+        <div class="delta">Rinovirus · 57,0%</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Virus 2° — S17</div>
+        <div class="value">Inf. A</div>
+        <div class="delta" style="color:var(--naranja)">Influenza A · 15,3%</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Virus 3° — S17</div>
+        <div class="value">Parainf.</div>
+        <div class="delta">Parainfluenza · 9,9%</div>
+      </div>
+    </div>
+
+    <div class="section-card" style="margin-bottom:20px;">
+      <div class="chart-header" style="padding:14px 20px 12px; border-bottom: 1px solid var(--gris-borde);">
+        <h3>📊 Barras de proporción por virus</h3>
+      </div>
+      <div style="padding: 20px;">
+        <div class="prog-row"><span class="prog-label">Rinovirus</span><div class="prog-bar"><div class="prog-fill" style="width:57%;background:#1565c0;"></div></div><span class="prog-val">57,0%</span></div>
+        <div class="prog-row"><span class="prog-label">Influenza A</span><div class="prog-bar"><div class="prog-fill" style="width:15.3%;background:#fb8c00;"></div></div><span class="prog-val">15,3%</span></div>
+        <div class="prog-row"><span class="prog-label">Parainfluenza</span><div class="prog-bar"><div class="prog-fill" style="width:9.9%;background:#0097a7;"></div></div><span class="prog-val">9,9%</span></div>
+        <div class="prog-row"><span class="prog-label">Adenovirus</span><div class="prog-bar"><div class="prog-fill" style="width:9.5%;background:#00897b;"></div></div><span class="prog-val">9,5%</span></div>
+        <div class="prog-row"><span class="prog-label">OVR</span><div class="prog-bar"><div class="prog-fill" style="width:3.6%;background:#7b1fa2;"></div></div><span class="prog-val">3,6%</span></div>
+        <div class="prog-row"><span class="prog-label">VRS</span><div class="prog-bar"><div class="prog-fill" style="width:1.7%;background:#f06292;"></div></div><span class="prog-val">1,7%</span></div>
+        <div class="prog-row"><span class="prog-label">SARS-CoV-2</span><div class="prog-bar"><div class="prog-fill" style="width:1.3%;background:#e53935;"></div></div><span class="prog-val">1,3%</span></div>
+        <div class="prog-row"><span class="prog-label">Influenza B</span><div class="prog-bar"><div class="prog-fill" style="width:1.2%;background:#8d6e63;"></div></div><span class="prog-val">1,2%</span></div>
+        <div class="prog-row"><span class="prog-label">Metapneumovirus</span><div class="prog-bar"><div class="prog-fill" style="width:0.5%;background:#78909c;"></div></div><span class="prog-val">0,5%</span></div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card full">
+        <div class="chart-header"><h3>🦠 Distribución de Virus Respiratorios — Nacional</h3></div>
+        <div class="chart-body"><canvas id="chartViralNac"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header orange">🌎 Tabla Circulación Viral Nacional</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Virus Respiratorio</th><th>Casos</th><th>Porcentaje</th></tr></thead>
+          <tbody>
+            <tr class="row-total"><td>Rinovirus</td><td>661</td><td>57,0%</td></tr>
+            <tr><td>Influenza A</td><td>177</td><td>15,3%</td></tr>
+            <tr><td>Parainfluenza</td><td>115</td><td>9,9%</td></tr>
+            <tr><td>Adenovirus</td><td>110</td><td>9,5%</td></tr>
+            <tr><td>OVR</td><td>42</td><td>3,6%</td></tr>
+            <tr><td>VRS</td><td>20</td><td>1,7%</td></tr>
+            <tr><td>SARS-CoV-2</td><td>15</td><td>1,3%</td></tr>
+            <tr><td>Influenza B</td><td>14</td><td>1,2%</td></tr>
+            <tr><td>Metapneumovirus</td><td>6</td><td>0,5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: VIRAL TALCA ===================== -->
+<div id="page-viral-tal" class="page">
+  <div class="top-bar">
+    <span class="top-bar-logo">🧬 Circulación Viral Talca</span>
+    <button class="back-btn" onclick="showPage('page-home')">← Inicio</button>
+  </div>
+  <div class="inner-header">
+    <h1>Circulación Viral Talca</h1>
+    <p>Hospital Centinela · Resultados virológicos locales · Semana 17</p>
+  </div>
+  <div class="inner-content" id="viral-tal-submodulo">
+
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="label">Total Casos</div>
+        <div class="value">279</div>
+        <div class="delta">Muestras analizadas</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Positivos</div>
+        <div class="value">83</div>
+        <div class="delta" style="color:var(--naranja)">29,7% positividad</div>
+      </div>
+      <div class="stat-chip">
+        <div class="label">Virus +</div>
+        <div class="value">86</div>
+        <div class="delta">Virus positivos detectados</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card full">
+        <div class="chart-header"><h3>🦠 Distribución Virus Positivos — Hospital Centinela Talca</h3></div>
+        <div class="chart-body"><canvas id="chartViralTal"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header pink">🧬 Hospital Centinela Talca — Resultados Virológicos</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Indicador</th><th>VRS</th><th>Adenovirus</th><th>Parainfluenza</th><th>Influenza A</th><th>Influenza B</th><th>Meta</th><th>SARS-CoV-2</th><th>Rinovirus</th><th>OVR</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Casos Detectados</td><td>0</td><td>17</td><td>3</td><td>6</td><td>0</td><td>0</td><td>1</td><td>59</td><td>0</td></tr>
+            <tr class="row-total"><td>Total muestras: 279 · Positivos: 83 · Virus+: 86</td><td colspan="9" style="text-align:center;color:var(--azul-medio)">Hospital Centinela Talca</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="chart-header" style="padding:14px 20px 12px; border-bottom: 1px solid var(--gris-borde);">
+        <h3>📊 Proporción por Virus — Talca</h3>
+      </div>
+      <div style="padding: 20px;">
+        <div class="prog-row"><span class="prog-label">Rinovirus</span><div class="prog-bar"><div class="prog-fill" style="width:68.6%;background:#1565c0;"></div></div><span class="prog-val">59</span></div>
+        <div class="prog-row"><span class="prog-label">Adenovirus</span><div class="prog-bar"><div class="prog-fill" style="width:19.8%;background:#00897b;"></div></div><span class="prog-val">17</span></div>
+        <div class="prog-row"><span class="prog-label">Influenza A</span><div class="prog-bar"><div class="prog-fill" style="width:7%;background:#fb8c00;"></div></div><span class="prog-val">6</span></div>
+        <div class="prog-row"><span class="prog-label">Parainfluenza</span><div class="prog-bar"><div class="prog-fill" style="width:3.5%;background:#0097a7;"></div></div><span class="prog-val">3</span></div>
+        <div class="prog-row"><span class="prog-label">SARS-CoV-2</span><div class="prog-bar"><div class="prog-fill" style="width:1.2%;background:#e53935;"></div></div><span class="prog-val">1</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ===== NAVIGATION =====
+function showPage(id, scrollTo) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id !== 'page-home') {
+    setTimeout(initCharts, 100);
+    if (scrollTo) {
+      setTimeout(() => {
+        const el = document.getElementById(scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+    }
+  }
+}
+
+// ===== CHARTS =====
+const chartInstances = {};
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+const S13_COLOR = '#1565c0';
+const S14_COLOR = '#00897b';
+const S15_COLOR = '#7b1fa2';
+const S16_COLOR = '#e65100';
+const S17_COLOR = '#2e7d32';
+const S13_ALPHA = 'rgba(21,101,192,0.12)';
+const S14_ALPHA = 'rgba(0,137,123,0.12)';
+
+const centros = ['SAPU\nAstaburuaga','SAPU\nJ.Contardo','SAR\nC.Trupp','SAR\nLa Florida','SAR\nLas Américas','SUR\nMercedes'];
+const totalS13 = [439, 459, 2517, 1540, 1476, 93];
+const totalS14 = [415, 398, 1234, 1562, 1505, 121];
+const totalS15 = [421, 419, 1215, 1647, 1447, 112];
+const totalS16 = [406, 392, 1211, 1575, 1350, 103];
+const totalS17 = [448, 436, 1174, 1514, 1360, 88];
+const respS13  = [201, 213, 771,  439,  418,  56];
+const respS14  = [175, 168, 352,  436,  332,  58];
+const respS15  = [163, 164, 323,  400,  361,  50];
+const respS16  = [177, 145, 340,  399,  305,  50];
+const respS17  = [179, 188, 326,  421,  404,  35];
+
+function initCharts() {
+  const activePage = document.querySelector('.page.active').id;
+
+  // URGENCIA PAGE
+  if (activePage === 'page-urgencia') {
+    destroyChart('chartRespTotalTalca');
+    destroyChart('chartCentrosTotal');
+    destroyChart('chartCentrosResp');
+
+    // GRÁFICO 1: Total Causas Sistema Respiratorio Total Talca S13 vs S14 — solo total
+    chartInstances['chartRespTotalTalca'] = new Chart(document.getElementById('chartRespTotalTalca'), {
+      type: 'bar',
+      data: {
+        labels: ['Semana 13', 'Semana 14', 'Semana 15', 'Semana 16', 'Semana 17'],
+        datasets: [
+          {
+            label:'Total Respiratorio (J00-J98)',
+            data:[2098, 1521, 1461, 1416, 1553],
+            backgroundColor:[S13_COLOR, S14_COLOR, S15_COLOR, S16_COLOR, S17_COLOR],
+            borderRadius:10,
+            barThickness: 60
+          }
+        ]
+      },
+      options: {
+        responsive:true,
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            callbacks:{
+              afterLabel: function(item) {
+                const totalAtenciones = [6524, 5235, 5261, 5037, 5020];
+                const pct = ((item.raw / totalAtenciones[item.dataIndex])*100).toFixed(1);
+                return ['% del total de atenciones: ' + pct + '%'];
+              }
+            }
+          }
+        },
+        scales:{
+          y:{
+            beginAtZero:true,
+            max:2500,
+            grid:{color:'#eee'},
+            ticks:{callback:v=>v.toLocaleString('es-CL')}
+          },
+          x:{grid:{display:false}}
+        }
+      },
+      plugins:[{
+        id:'labelRespPlugin',
+        afterDatasetsDraw(chart) {
+          const {ctx} = chart;
+          const totalAtenciones = [6524, 5235, 5261, 5037, 5020];
+          chart.getDatasetMeta(0).data.forEach((bar, i) => {
+            const val = chart.data.datasets[0].data[i];
+            const pct = ((val/totalAtenciones[i])*100).toFixed(1);
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 20px Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(val.toLocaleString('es-CL'), bar.x, bar.y + 28);
+            ctx.font = '13px sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.fillText(pct + '% del total', bar.x, bar.y + 48);
+            ctx.restore();
+          });
+        }
+      }]
+    });
+
+    // GRÁFICO 2: Total atenciones por centro
+    chartInstances['chartCentrosTotal'] = new Chart(document.getElementById('chartCentrosTotal'), {
+      type: 'bar',
+      data: {
+        labels: centros.map(c => c.replace('\n',' ')),
+        datasets: [
+          { label:'Semana 13', data: totalS13, backgroundColor: S13_COLOR, borderRadius: 5 },
+          { label:'Semana 14', data: totalS14, backgroundColor: S14_COLOR, borderRadius: 5 },
+          { label:'Semana 15', data: totalS15, backgroundColor: S15_COLOR, borderRadius: 5 },
+          { label:'Semana 16', data: totalS16, backgroundColor: S16_COLOR, borderRadius: 5 },
+          { label:'Semana 17', data: totalS17, backgroundColor: S17_COLOR, borderRadius: 5 }
+        ]
+      },
+      options: { responsive:true, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true, grid:{color:'#eee'}}, x:{grid:{display:false}}} }
+    });
+
+    // GRÁFICO 3: Causas respiratorias por centro
+    chartInstances['chartCentrosResp'] = new Chart(document.getElementById('chartCentrosResp'), {
+      type: 'bar',
+      data: {
+        labels: centros.map(c => c.replace('\n',' ')),
+        datasets: [
+          { label:'Semana 13', data: respS13, backgroundColor: '#42a5f5', borderRadius: 5 },
+          { label:'Semana 14', data: respS14, backgroundColor: '#26a69a', borderRadius: 5 },
+          { label:'Semana 15', data: respS15, backgroundColor: '#ab47bc', borderRadius: 5 },
+          { label:'Semana 16', data: respS16, backgroundColor: '#ff7043', borderRadius: 5 },
+          { label:'Semana 17', data: respS17, backgroundColor: '#66bb6a', borderRadius: 5 }
+        ]
+      },
+      options: { responsive:true, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true, grid:{color:'#eee'}}, x:{grid:{display:false}}} }
+    });
+  }
+
+  // VACUNA PAGE
+  if (activePage === 'page-vacuna') {
+    destroyChart('chartVacuna');
+    destroyChart('chartVacunaDonut');
+
+    chartInstances['chartVacuna'] = new Chart(document.getElementById('chartVacuna'), {
+      type: 'bar',
+      data: {
+        labels: ['Talca','País'],
+        datasets:[{ label:'Cobertura (%)', data:[76.35, 63.86], backgroundColor:[S13_COLOR, '#90a4ae'], borderRadius:8 }]
+      },
+      options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, max:100, ticks:{callback:v=>v+'%'}, grid:{color:'#eee'}}, x:{grid:{display:false}}} }
+    });
+
+    chartInstances['chartVacunaDonut'] = new Chart(document.getElementById('chartVacunaDonut'), {
+      type: 'doughnut',
+      data: {
+        labels:['Vacunados','No vacunados'],
+        datasets:[{ data:[114107,35341], backgroundColor:[S13_COLOR,'#e8eef5'], borderWidth:0 }]
+      },
+      options:{ responsive:true, plugins:{legend:{display:false}} }
+    });
+  }
+
+  // KINESICA PAGE
+  if (activePage === 'page-kinesica') {
+    destroyChart('chartKinesicaCentros');
+    destroyChart('chartKinesicaTotal');
+
+    const kCentros = ['Astaburuaga','J.Contardo','La Florida','C.Trupp','Las Américas','Bicentenario','V.Magisterio','F.González','CECOSF C.Trupp','CECOSF N.Horizonte','CECOSF B.Sol','P.Mercedes'];
+    const kinS13 = [16,9,34,24,48,9,25,23,1,0,0,5];
+    const kinS14 = [16,24,47,36,59,20,27,16,2,4,0,0];
+    const kinS15 = [13,33,38,56,62,21,45,32,8,3,0,0];
+    const kinS16 = [22,39,39,50,56,24,29,26,7,1,0,0];
+    const kinS17 = [27,39,36,43,49,13,34,22,7,4,0,8];
+
+    chartInstances['chartKinesicaCentros'] = new Chart(document.getElementById('chartKinesicaCentros'), {
+      type: 'bar',
+      data: {
+        labels: kCentros,
+        datasets:[
+          { label:'Semana 13', data:kinS13, backgroundColor:S13_COLOR, borderRadius:4 },
+          { label:'Semana 14', data:kinS14, backgroundColor:S14_COLOR, borderRadius:4 },
+          { label:'Semana 15', data:kinS15, backgroundColor:S15_COLOR, borderRadius:4 },
+          { label:'Semana 16', data:kinS16, backgroundColor:S16_COLOR, borderRadius:4 },
+          { label:'Semana 17', data:kinS17, backgroundColor:S17_COLOR, borderRadius:4 }
+        ]
+      },
+      options:{ responsive:true, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true, grid:{color:'#eee'}}, x:{grid:{display:false}, ticks:{maxRotation:45}}} }
+    });
+
+    chartInstances['chartKinesicaTotal'] = new Chart(document.getElementById('chartKinesicaTotal'), {
+      type: 'bar',
+      data: {
+        labels:['Semana 13','Semana 14','Semana 15','Semana 16'],
+        datasets:[
+          {
+            label:'Total Consultas Talca',
+            data:[194,251,311,293,282],
+            backgroundColor:[S13_COLOR, S14_COLOR, S15_COLOR, S16_COLOR, S17_COLOR],
+            borderRadius:8,
+            borderWidth:0
+          }
+        ]
+      },
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            callbacks:{
+              afterLabel: function(item) {
+                const d={0:'',1:'▲+57 vs S13',2:'▲+60 vs S14',3:'▼-18 vs S15',4:'▼-11 vs S16'}; return [d[item.dataIndex]||''];
+                return [];
+              }
+            }
+          },
+          afterDraw: function(chart) {}
+        },
+        scales:{
+          y:{beginAtZero:true, min:0, max:360, grid:{color:'#eee'},
+            ticks:{callback:v=>v+' cons.'}
+          },
+          x:{grid:{display:false}}
+        }
+      },
+      plugins:[{
+        id:'labelPlugin',
+        afterDatasetsDraw(chart) {
+          const {ctx, data} = chart;
+          chart.getDatasetMeta(0).data.forEach((bar, i) => {
+            const val = data.datasets[0].data[i];
+            ctx.save();
+            ctx.fillStyle = '#0a2342';
+            ctx.font = 'bold 14px Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(val, bar.x, bar.y - 8);
+            const deltas={0:'',1:'▲+57',2:'▲+60',3:'▼-18',4:'▼-11'}; if(deltas[i]){ctx.fillStyle=(i===3||i===4)?'#e65100':'#00897b';ctx.font='bold 11px sans-serif';ctx.fillText(deltas[i], bar.x, bar.y - 24);}
+            ctx.restore();
+          });
+        }
+      }]
+    });
+  }
+
+  // VIRAL NACIONAL PAGE
+  if (activePage === 'page-viral-nac') {
+    destroyChart('chartViralNac');
+    chartInstances['chartViralNac'] = new Chart(document.getElementById('chartViralNac'), {
+      type: 'bar',
+      data: {
+        labels:['Rinovirus','Influenza A','SARS-CoV-2','Adenovirus','OVR','Parainfluenza','VRS','Metapneumovirus','Influenza B'],
+        datasets:[{ label:'Casos', data:[661,177,115,110,42,20,15,14,6],
+          backgroundColor:['#1565c0','#fb8c00','#0097a7','#00897b','#7b1fa2','#f06292','#e53935','#8d6e63','#78909c'],
+          borderRadius:5 }]
+      },
+      options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, grid:{color:'#eee'}}, x:{grid:{display:false}, ticks:{maxRotation:30}}} }
+    });
+  }
+
+  // VIRAL TALCA PAGE
+  if (activePage === 'page-viral-tal') {
+    destroyChart('chartViralTal');
+    chartInstances['chartViralTal'] = new Chart(document.getElementById('chartViralTal'), {
+      type: 'bar',
+      data: {
+        labels:['Rinovirus','Adenovirus','Influenza A','Parainfluenza','SARS-CoV-2'],
+        datasets:[{ label:'Casos Positivos', data:[59,17,6,3,1],
+          backgroundColor:['#1565c0','#00897b','#fb8c00','#0097a7','#e53935'],
+          borderRadius:5 }]
+      },
+      options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, grid:{color:'#eee'}}, x:{grid:{display:false}}} }
+    });
+  }
+}
+
+// Init on load for home page (no charts needed)
+</script>
+</body>
+</html>
